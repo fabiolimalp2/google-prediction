@@ -3,40 +3,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Base extends CI_Controller
 {
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->client_id = $this->config->item('client_id');
-        $this->service_account_name = $this->config->item('service_account_name');
-        $this->key_filename = $this->config->item('key_filename');
-        $this->project_id = $this->config->item('project_id');
-		$this->sample_id = $this->config->item('sample_id');
-        $this->bucket_name = $this->config->item('bucket_name');
-        $this->store_file_name = $this->config->item('store_file_name');
-        $this->local_file = $this->config->item('local_file');
-    }
-
 
     public function index()
     {
-        $html = $this->load->view('menu_view', '', true);
-		$html .= $this->load->view('form_view', '', true);
-        return $this->show($html);
-
-    }
-
- public function recebe()
-    {
-
-        $text_input = trim($_POST['pesquisa']);
-
-        $hosted_model_id = 'sample.tagger';        
-        $result = $this->hosted_model_predict($text_input, $hosted_model_id);
-        $data['result'] = $result;
-		$data['action'] = '';
-        $html = $this->load->view('categorizer_view', $data, true);
-		$html .= $this->load->view('form_view', $data, true);
+        $html = $this->load->view('welcome_message', '', true);
         return $this->show($html);
 
     }
@@ -47,10 +17,8 @@ class Base extends CI_Controller
         $text_input = 'How about meeting up later?';
         $result = $this->hosted_model_predict($text_input, $hosted_model_id);
         $data['result'] = $result;
-		$data['action'] = 'category';
         $html = $this->load->view('categorizer_view', $data, true);
-		$html .= $this->load->view('form_view', $data, true);
-        return $this->show($html);
+        $this->show($html);
     }
 
     public function sentiment()
@@ -59,10 +27,8 @@ class Base extends CI_Controller
         $text_input = 'How about meeting up later?';
         $result = $this->hosted_model_predict($text_input, $hosted_model_id);
         $data['result'] = $result;
-		$data['action'] = 'sentiment';
         $html = $this->load->view('sentiment_view', $data, true);
-		$html .= $this->load->view('form_view', $data, true);
-        return $this->show($html);
+        $this->show($html);
     }
 
     public function language()
@@ -71,20 +37,17 @@ class Base extends CI_Controller
         $text_input = 'How about meeting up later?';
         $result = $this->hosted_model_predict($text_input, $hosted_model_id);
         $data['result'] = $result;
-		$data['action'] = 'language';
         $html = $this->load->view('language_view', $data, true);
-		$html .= $this->load->view('form_view', $data, true);
-        return $this->show($html);
+        $this->show($html);
     }
 
     public function coyote_upload()
     {
-        $training_model_id = 'wise-coyote-model';
+		$training_model_id = 'wise-coyote-model';
         $training_result = $this->call_google_storage($training_model_id);
         $data['training_result'] = $training_result;
         $html = $this->load->view('coyote_upload_view', $data, true);
-		$html .= $this->load->view('form_view', $data, true);
-        return $this->show($html);
+        $this->show($html);
     }
 
     public function coyote_status()
@@ -93,20 +56,23 @@ class Base extends CI_Controller
         $status = $this->trained_model_status($trained_model_id);
         $data['status'] = $status;
         $html = $this->load->view('coyote_status_view', $data, true);
-        return $this->show($html);
+        $this->show($html);
     }
 
     public function coyote_predict()
     {
-		
         $trained_model_id = 'wise-coyote-model';
         $text_input = 'How about meeting up later?';
         $result = $this->trained_model_predict($text_input, $trained_model_id);
         $data['result'] = $result;
-		$data['action'] = 'coyote_predict';
         $html = $this->load->view('coyote_trained_view', $data, true);
-		$html .= $this->load->view('form_view', $data, true);
-        return $this->show($html);
+        $this->show($html);
+    }
+
+    public function recebe()
+    {
+
+
     }
 
     function show($content)
@@ -119,12 +85,22 @@ class Base extends CI_Controller
 
     public function call_google_storage($training_model_id)
     {
+
+        $client_id = $this->config->item('client_id');
+        $key_filename = $this->config->item('key_filename');
+        $project_id = $this->config->item('project_id');
+        $service_account_name = $this->config->item('service_account_name');
+        $bucket_name = $this->config->item('bucket_name');
+        $store_file_name = $this->config->item('store_file_name');
+        $local_file = $this->config->item('local_file');
+
         $client = new Google_Client();
         $client->setApplicationName("Storage and Google Prediction");
-        $key = file_get_contents($this->key_filename);
-        $client->setClientId($this->client_id);
+        $key = file_get_contents($key_filename);
+
+        $client->setClientId($client_id);
         $client->setAssertionCredentials(new Google_Auth_AssertionCredentials(
-            $this->service_account_name, array(
+            $service_account_name, array(
             'https://www.googleapis.com/auth/prediction',
             'https://www.googleapis.com/auth/devstorage.read_write'), $key));
 
@@ -132,18 +108,18 @@ class Base extends CI_Controller
 
 // https://developers.google.com/storage/docs/json_api/v1/buckets/insert
         $storage_object = new Google_Service_Storage_StorageObject();
-        $storage_object->setBucket($this->bucket_name);
-        $storage_object->setName($this->store_file_name);
+        $storage_object->setBucket($bucket_name);
+        $storage_object->setName($store_file_name);
 
         $store_options = array(
-            'data' => file_get_contents($this->local_file),
+            'data' => file_get_contents($local_file),
             'mimeType' => 'text/plain',
             'uploadType' => 'media'
         );
 
         echo "Uploading model... ";
 
-        $store_response = $storage->objects->insert($this->bucket_name, $storage_object, $store_options);
+        $store_response = $storage->objects->insert($bucket_name, $storage_object, $store_options);
 
         echo "Done\n";
 
@@ -153,47 +129,61 @@ class Base extends CI_Controller
 
         $insert = new Google_Service_Prediction_Insert();
         $insert->setId($training_model_id);
-        $insert->setStorageDataLocation($this->bucket_name . '/' . $this->store_file_name);
+        $insert->setStorageDataLocation($bucket_name . '/' . $store_file_name);
 
         $training_options = array();
-        $training_result = $prediction->trainedmodels->insert($this->project_id, $insert, $training_options);
+        $training_result = $prediction->trainedmodels->insert($project_id, $insert, $training_options);
 
         return $training_result;
-
+		
     }
+	
+	 public function trained_model_status($trained_model_id)
+	 {
+	$client_id = $this->config->item('client_id');
+        $key_filename = $this->config->item('key_filename');
+        $project_id = $this->config->item('project_id');
+        $service_account_name = $this->config->item('service_account_name');
+		
+	// Create Google Client
+$client = new Google_Client();
+$client->setApplicationName("Google Prediction");
 
-    public function trained_model_status($trained_model_id)
-    {
+$key = file_get_contents($key_filename);
 
-        $client = new Google_Client();
-        $client->setApplicationName("Google Prediction");
+$client->setAssertionCredentials(new Google_Auth_AssertionCredentials(
+    $service_account_name, array('https://www.googleapis.com/auth/prediction'), $key));
+	
+$client->setClientId($client_id);
 
-        $key = file_get_contents($this->key_filename);
+// Create Prediction Service
+$service = new Google_Service_Prediction($client);
 
-        $client->setAssertionCredentials(new Google_Auth_AssertionCredentials(
-            $this->service_account_name, array('https://www.googleapis.com/auth/prediction'), $key));
+// additional options
+$options = array(); 
 
-        $client->setClientId($this->client_id);
+// print the object result/status
 
-        $service = new Google_Service_Prediction($client);
 
-        $options = array();
-
-        $status = $service->trainedmodels->get($this->project_id, $trained_model_id, $options);
+$status = $service->trainedmodels->get($project_id, $trained_model_id, $options);
 
 //print_r($status);
 
-        return $status;
-    }
+return $status;
+	 }
 
     public function trained_model_predict($text_input, $trained_model_id)
     {
+        $client_id = $this->config->item('client_id');
+        $service_account_name = $this->config->item('service_account_name');
+        $key_filename = $this->config->item('key_filename');
+        $project_id = $this->config->item('project_id');
 
         $client = new Google_Client();
         $client->setApplicationName("Google Prediction");
-        $key = file_get_contents($this->key_filename);
-        $client->setAssertionCredentials(new Google_Auth_AssertionCredentials($this->service_account_name, array('https://www.googleapis.com/auth/prediction'), $key));
-        $client->setClientId($this->client_id);
+        $key = file_get_contents($key_filename);
+        $client->setAssertionCredentials(new Google_Auth_AssertionCredentials($service_account_name, array('https://www.googleapis.com/auth/prediction'), $key));
+        $client->setClientId($client_id);
         $service = new Google_Service_Prediction($client);
 
         $input_input = new Google_Service_Prediction_InputInput();
@@ -203,7 +193,7 @@ class Base extends CI_Controller
         $input->setInput($input_input);
 
         $options = array();
-        $result = $service->trainedmodels->predict($this->project_id, $trained_model_id, $input, $options);
+        $result = $service->trainedmodels->predict($project_id, $trained_model_id, $input, $options);
 
         return $result;
     }
@@ -211,11 +201,15 @@ class Base extends CI_Controller
     public function hosted_model_predict($text_input, $hosted_model_id)
     {
 
+        $client_id = $this->config->item('client_id');
+        $service_account_name = $this->config->item('service_account_name');
+        $key_filename = $this->config->item('key_filename');
+        $project_id = $this->config->item('project_id');
         $client = new Google_Client();
         $client->setApplicationName("Google Prediction");
-        $key = file_get_contents($this->key_filename);
-        $client->setAssertionCredentials(new Google_Auth_AssertionCredentials($this->service_account_name, array('https://www.googleapis.com/auth/prediction'), $key));
-        $client->setClientId($this->client_id);
+        $key = file_get_contents($key_filename);
+        $client->setAssertionCredentials(new Google_Auth_AssertionCredentials($service_account_name, array('https://www.googleapis.com/auth/prediction'), $key));
+        $client->setClientId($client_id);
 
         $service = new Google_Service_Prediction($client);
         $input_input = new Google_Service_Prediction_InputInput();
@@ -224,7 +218,7 @@ class Base extends CI_Controller
         $input->setInput($input_input);
 
         $options = array();
-        $result = $service->hostedmodels->predict($this->sample_id, $hosted_model_id, $input, $options);
+        $result = $service->hostedmodels->predict($project_id, $hosted_model_id, $input, $options);
 
         return $result;
     }

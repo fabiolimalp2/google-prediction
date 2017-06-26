@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Base extends CI_Controller
+class Coyote extends CI_Controller
 {
     public function __construct()
     {
@@ -13,8 +13,8 @@ class Base extends CI_Controller
         $this->project_id = $this->config->item('project_id');
 		$this->sample_id = $this->config->item('sample_id');
         $this->bucket_name = $this->config->item('bucket_name');
-        $this->store_file_name = $this->config->item('store_file_name');
-        $this->local_file = $this->config->item('local_file');
+        $this->store_file_name = 'alimentos_id';
+        $this->local_file = 'alimentos_id.txt';
     }
 
 
@@ -24,57 +24,6 @@ class Base extends CI_Controller
 		$html .= $this->load->view('form_view', '', true);
         return $this->show($html);
 
-    }
-
- public function recebe()
-    {
-
-        $text_input = trim($_POST['pesquisa']);
-
-        $hosted_model_id = 'sample.tagger';        
-        $result = $this->hosted_model_predict($text_input, $hosted_model_id);
-        $data['result'] = $result;
-		$data['action'] = '';
-        $html = $this->load->view('categorizer_view', $data, true);
-		$html .= $this->load->view('form_view', $data, true);
-        return $this->show($html);
-
-    }
-
-    public function category()
-    {
-        $hosted_model_id = 'sample.tagger';
-        $text_input = 'How about meeting up later?';
-        $result = $this->hosted_model_predict($text_input, $hosted_model_id);
-        $data['result'] = $result;
-		$data['action'] = 'category';
-        $html = $this->load->view('categorizer_view', $data, true);
-		$html .= $this->load->view('form_view', $data, true);
-        return $this->show($html);
-    }
-
-    public function sentiment()
-    {
-        $hosted_model_id = 'sample.sentiment';
-        $text_input = 'How about meeting up later?';
-        $result = $this->hosted_model_predict($text_input, $hosted_model_id);
-        $data['result'] = $result;
-		$data['action'] = 'sentiment';
-        $html = $this->load->view('sentiment_view', $data, true);
-		$html .= $this->load->view('form_view', $data, true);
-        return $this->show($html);
-    }
-
-    public function language()
-    {
-        $hosted_model_id = 'sample.languageid';
-        $text_input = 'How about meeting up later?';
-        $result = $this->hosted_model_predict($text_input, $hosted_model_id);
-        $data['result'] = $result;
-		$data['action'] = 'language';
-        $html = $this->load->view('language_view', $data, true);
-		$html .= $this->load->view('form_view', $data, true);
-        return $this->show($html);
     }
 
     public function coyote_upload()
@@ -92,6 +41,7 @@ class Base extends CI_Controller
         $trained_model_id = 'wise-coyote-model';
         $status = $this->trained_model_status($trained_model_id);
         $data['status'] = $status;
+	
         $html = $this->load->view('coyote_status_view', $data, true);
         return $this->show($html);
     }
@@ -99,14 +49,22 @@ class Base extends CI_Controller
     public function coyote_predict()
     {
 		
+		$text_input = trim($_POST['pesquisa']);
         $trained_model_id = 'wise-coyote-model';
-        $text_input = 'How about meeting up later?';
+       
         $result = $this->trained_model_predict($text_input, $trained_model_id);
         $data['result'] = $result;
 		$data['action'] = 'coyote_predict';
         $html = $this->load->view('coyote_trained_view', $data, true);
 		$html .= $this->load->view('form_view', $data, true);
         return $this->show($html);
+    }
+
+    public function recebe()
+    {
+
+var_dump($_POST);
+
     }
 
     function show($content)
@@ -180,8 +138,6 @@ class Base extends CI_Controller
         $options = array();
 
         $status = $service->trainedmodels->get($this->project_id, $trained_model_id, $options);
-
-//print_r($status);
 
         return $status;
     }

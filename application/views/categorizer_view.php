@@ -7,8 +7,6 @@
  */
 
 
-// print_r($result);
-
 ?>
 
 <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -62,12 +60,3 @@ var data = [
 </table>
 <?php	endforeach; ?>
 
-<form action="categorizer" method="post">
-  <div class="form-group">
-    <label for="">Digite aqui</label>
-    <input type="text" class="form-control" id="" name="pesquisa" placeholder="">
-  </div> 
-  
-  <button type="submit" class="btn btn-default">Enviar</button>
-  
-</form>

@@ -1,25 +1,26 @@
 <?php
 /**
-
 * Created by PhpStorm.
  * User: Dominus
  * Date: 24/06/2017
  * Time: 17:57
-
  */
-
 ?>
 
+<?php 
+print_r($training_result);
 
-<?php echo "Done"; ?>
+ ?><?php echo "Training Result:";  ?>
 
-<?php echo "Training Result:";  ?>
-
-<table>
-  <?php foreach ($training_result as $v) { ?>
-  <tr>
+<main>
+  <div class="container">
+    <table>
+      <?php foreach($training_result as $row) : ?>
+      <tr>
+        <td><?php  echo $row;  ?></td>
+      </tr>
+      <?php	endforeach; ?>
+    </table>
     
-    <td><?php    echo $v; ?></td>
-  </tr>
-  <?php  } ?>
-</table>
+  </div>
+</main>
