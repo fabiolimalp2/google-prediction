@@ -2,8 +2,6 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 
-	<p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
-</div>
 
 <!--Footer-->
 <footer class="page-footer center-on-small-only"> 
@@ -32,13 +30,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </footer>
 
 <!--/.Footer--> 
-
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script> 
-
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
-
-<!-- MDB core JavaScript --> 
-<script type="text/javascript" src="http://sampaio.16mb.com/fabio_lima/public/js/mdb.min.js"></script> 
 
 </body>
 </html>

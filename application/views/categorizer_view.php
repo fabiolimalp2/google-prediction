@@ -8,18 +8,14 @@
 
 
 ?>
-
 <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 <script src="http://sampaio.16mb.com/chartjs/assets/Chart.js"></script>
- <script type="text/javascript">
+<script type="text/javascript">
     $(document).ready(function(){
 
 var data = [
     <?php foreach ($result as $row): ?>
-    {   
-                        
-
-            
+    {       
         value: <?= $row->score; ?>,
         color: "rgba(220,220,220,0.8)",
         highlight: "rgba(151,187,205,0.5)",
@@ -34,29 +30,24 @@ var data = [
         document.getElementById("demoLegend").innerHTML = chart.generateLegend();
     });
     </script>
-    <div class="container">
+
+<div class="container">
   <div class="row">
-    <div class="col-sm-9">
+    <div class="col-md-8">
       <canvas id="demoChart" style="width: 600px; height: 350px;"></canvas>
     </div>
-    <div class="col-sm-3">
-      <div id="demoLegend">
-         
-      </div>
+    <div class="col-md-4">
+     <div class="well">
+    <h3> A frase foi interpretada relacionado ao:</h3>
+      <table class="table table-responsive">
+        <?php foreach($result as $row) : ?>
+        <tr>
+          <td><?php  echo $row->label;  ?></td>
+          <td><?php echo round($row->score * 100), '%'; ?></td>
+        </tr>
+        <?php	endforeach; ?>
+      </table>
     </div>
   </div>
   </div>
-  
-<?php
-
-
- foreach($result as $row) : ?>
-
-<table>
-  <tr>
-    <td><?php  echo $row->label;  ?></td>
-    <td><?php  echo $row->score;   ?></td>
-  </tr>
-</table>
-<?php	endforeach; ?>
-
+</div>

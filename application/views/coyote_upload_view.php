@@ -7,20 +7,16 @@
  */
 ?>
 
-<?php 
-print_r($training_result);
+<?php echo "Training Result:";  ?>
 
- ?><?php echo "Training Result:";  ?>
-
-<main>
-  <div class="container">
-    <table>
+<div class="container">
+  <div class="well">
+    <table class="table table-responsive table-bordered">
       <?php foreach($training_result as $row) : ?>
       <tr>
         <td><?php  echo $row;  ?></td>
       </tr>
       <?php	endforeach; ?>
     </table>
-    
   </div>
-</main>
+</div>

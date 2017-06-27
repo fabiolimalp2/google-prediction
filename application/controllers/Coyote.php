@@ -6,7 +6,7 @@ class Coyote extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-
+        $this->load->model('Model_model');
         $this->client_id = $this->config->item('client_id');
         $this->service_account_name = $this->config->item('service_account_name');
         $this->key_filename = $this->config->item('key_filename');
@@ -28,17 +28,17 @@ class Coyote extends CI_Controller
 
     public function coyote_upload()
     {
-        $training_model_id = 'wise-coyote-model';
+        $training_model_id = 'coyote-model';
         $training_result = $this->call_google_storage($training_model_id);
         $data['training_result'] = $training_result;
         $html = $this->load->view('coyote_upload_view', $data, true);
-		$html .= $this->load->view('form_view', $data, true);
+		
         return $this->show($html);
     }
 
     public function coyote_status()
     {
-        $trained_model_id = 'wise-coyote-model';
+        $trained_model_id = 'coyote-model';
         $status = $this->trained_model_status($trained_model_id);
         $data['status'] = $status;
 	
@@ -48,23 +48,24 @@ class Coyote extends CI_Controller
 
     public function coyote_predict()
     {
-		
-		$text_input = trim($_POST['pesquisa']);
-        $trained_model_id = 'wise-coyote-model';
-       
+		if (isset($_POST["submit"])) 
+		{
+		$text_input = trim($_POST['pesquisa']);		
+		}
+		else
+		{
+		$text_input = 'maça';
+		}
+		$trained_model_id = 'coyote-model';
+		$data['model_info'] = $this->Model_model->get_trained_model($trained_model_id);
+			   
         $result = $this->trained_model_predict($text_input, $trained_model_id);
         $data['result'] = $result;
 		$data['action'] = 'coyote_predict';
         $html = $this->load->view('coyote_trained_view', $data, true);
 		$html .= $this->load->view('form_view', $data, true);
         return $this->show($html);
-    }
-
-    public function recebe()
-    {
-
-var_dump($_POST);
-
+		
     }
 
     function show($content)

@@ -34,15 +34,9 @@ $client->setClientId($this->client_id);
 
 $service = new Google_Service_Prediction($client);
 
-
-var_dump($_POST);
-
-
-
+//var_dump($_POST);
 
 $text_input = 'you mad';
-
-
 
 $input_input = new Google_Service_Prediction_InputInput();
 
@@ -63,9 +57,12 @@ $result = $service->hostedmodels->predict($this->project_id, $this->hosted_model
 // print_r($result);
 
   $data['result'] = $result;
+  
+  $this->load->view('header');
 
  $this->load->view('sentiment_view', $data);
   
+  $this->load->view('footer');
   
 	}
 }

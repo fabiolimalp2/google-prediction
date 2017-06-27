@@ -6,7 +6,7 @@ class Base extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-
+        $this->load->model('Model_model');
         $this->client_id = $this->config->item('client_id');
         $this->service_account_name = $this->config->item('service_account_name');
         $this->key_filename = $this->config->item('key_filename');
@@ -20,31 +20,24 @@ class Base extends CI_Controller
 
     public function index()
     {
-        $html = $this->load->view('menu_view', '', true);
-		$html .= $this->load->view('form_view', '', true);
+		$html = $this->load->view('profile_view', '', true);
+        $html .= $this->load->view('menu_view', '', true);
         return $this->show($html);
-
-    }
-
- public function recebe()
-    {
-
-        $text_input = trim($_POST['pesquisa']);
-
-        $hosted_model_id = 'sample.tagger';        
-        $result = $this->hosted_model_predict($text_input, $hosted_model_id);
-        $data['result'] = $result;
-		$data['action'] = '';
-        $html = $this->load->view('categorizer_view', $data, true);
-		$html .= $this->load->view('form_view', $data, true);
-        return $this->show($html);
-
     }
 
     public function category()
     {
-        $hosted_model_id = 'sample.tagger';
-        $text_input = 'How about meeting up later?';
+        if (isset($_POST["submit"])) 
+		{
+		$text_input = trim($_POST['pesquisa']);		
+		}
+		else
+		{
+		$text_input = 'Have you heard about that video?';
+		}
+		$hosted_model_id = 'sample.tagger';
+		$data['model_info'] = $this->Model_model->get_hosted_model($hosted_model_id);
+        
         $result = $this->hosted_model_predict($text_input, $hosted_model_id);
         $data['result'] = $result;
 		$data['action'] = 'category';
@@ -55,8 +48,17 @@ class Base extends CI_Controller
 
     public function sentiment()
     {
-        $hosted_model_id = 'sample.sentiment';
-        $text_input = 'How about meeting up later?';
+        if (isset($_POST["submit"])) 
+		{
+		$text_input = trim($_POST['pesquisa']);		
+		}
+		else
+		{
+		$text_input = 'Good morning!';
+		}
+		$hosted_model_id = 'sample.sentiment';
+        $data['model_info'] = $this->Model_model->get_hosted_model($hosted_model_id);
+		
         $result = $this->hosted_model_predict($text_input, $hosted_model_id);
         $data['result'] = $result;
 		$data['action'] = 'sentiment';
@@ -67,8 +69,17 @@ class Base extends CI_Controller
 
     public function language()
     {
+		if (isset($_POST["submit"])) 
+		{
+		$text_input = trim($_POST['pesquisa']);		
+		}
+		else
+		{
+		$text_input = 'How about meeting up later?';
+		}
         $hosted_model_id = 'sample.languageid';
-        $text_input = 'How about meeting up later?';
+        $data['model_info'] = $this->Model_model->get_hosted_model($hosted_model_id);
+		
         $result = $this->hosted_model_predict($text_input, $hosted_model_id);
         $data['result'] = $result;
 		$data['action'] = 'language';
@@ -83,7 +94,7 @@ class Base extends CI_Controller
         $training_result = $this->call_google_storage($training_model_id);
         $data['training_result'] = $training_result;
         $html = $this->load->view('coyote_upload_view', $data, true);
-		$html .= $this->load->view('form_view', $data, true);
+		
         return $this->show($html);
     }
 
@@ -98,13 +109,22 @@ class Base extends CI_Controller
 
     public function coyote_predict()
     {
+		if (isset($_POST["submit"])) 
+		{
+		$text_input = trim($_POST['pesquisa']);		
+		}
+		else
+		{
+		$text_input = 'beterraba';
+		}
 		
         $trained_model_id = 'wise-coyote-model';
-        $text_input = 'How about meeting up later?';
+        $data['model_info'] = $this->Model_model->get_trained_model($trained_model_id);
+		
         $result = $this->trained_model_predict($text_input, $trained_model_id);
-        $data['result'] = $result;
+		$data['result'] = $result;
 		$data['action'] = 'coyote_predict';
-        $html = $this->load->view('coyote_trained_view', $data, true);
+        $html = $this->load->view('coyote_view', $data, true);
 		$html .= $this->load->view('form_view', $data, true);
         return $this->show($html);
     }

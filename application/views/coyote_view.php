@@ -42,7 +42,7 @@ var data = [
     </div>
     <div class="col-md-4">
      <div class="well">
-    <h3> O alimento foi interpretado como:</h3>
+    <h3> A lingua interpretada foi:</h3>
       <table class="table table-responsive">
         <?php foreach($result as $row) : ?>
         <tr>
