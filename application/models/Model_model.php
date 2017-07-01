@@ -26,4 +26,49 @@ class Model_model extends CI_Model
         return $row;
                
     }
+	public function all()
+    {
+        $result = $this->db->get('model_file');
+        return $result;
+    }
+
+    public function find($id)
+    {
+        $row = $this->db->where('id',$id)->limit(1)->get('model_file');
+        return $row;
+    }
+
+    public function create($data)
+    {
+        try{
+            $this->db->insert('model_file', $data);
+            return true;
+        }catch(Exception $e){
+            echo $e->getMessage();
+        }
+    }
+
+    public function update($id, $data)
+    {
+        try{
+            $this->db->where('id',$id)->limit(1)->update('model_file', $data);
+            return true;
+        }catch(Exception $e){
+            echo $e->getMessage();
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            $this->db->where('id',$id)->delete('model_file');
+            return true;
+        }
+
+            //catch exception
+        catch(Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
 }
